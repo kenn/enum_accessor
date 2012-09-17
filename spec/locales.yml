@@ -1,0 +1,6 @@
+ja:
+  enum_accessor:
+    user:
+      gender:
+        female: 女
+        male: 男
