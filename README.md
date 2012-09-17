@@ -1,6 +1,6 @@
 # EnumAccessor - Simple enum fields for ActiveRecord
 
-EnumAccessor lets you define enum for attributes, and store them as integer-encoded values.
+EnumAccessor lets you define enum for attributes, and store them as integer in the database.
 
 Compatible with ActiveRecord 3 or later.
 
@@ -33,7 +33,7 @@ And now you have a set of methods and constants.
 ```ruby
 user = User.new
 user.gender             # => :female
-user.gender_female?     # => true
+user.gender_male?       # => false
 user.gender_raw         # => 0
 
 user.gender = :male
@@ -43,6 +43,8 @@ user.gender_raw         # => 1
 User.genders            # => { :female => 0, :male => 1 }
 User::GENDERS           # => { "female" => 0, "male" => 1 }
 ```
+
+Notice that zero-based numbering is used for database values.
 
 ## Manual coding
 
