@@ -31,9 +31,6 @@ end
 And now you have a set of methods and constants.
 
 ```ruby
-User::GENDERS           # => { "female" => 0, "male" => 1 }
-User.genders            # => { :female => 0, :male => 1 }
-
 user = User.new
 user.gender             # => :female
 user.gender_female?     # => true
@@ -42,6 +39,9 @@ user.gender_raw         # => 0
 user.gender = :male
 user.gender_male?       # => true
 user.gender_raw         # => 1
+
+User.genders            # => { :female => 0, :male => 1 }
+User::GENDERS           # => { "female" => 0, "male" => 1 }
 ```
 
 ## Manual coding
