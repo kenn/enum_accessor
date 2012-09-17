@@ -117,10 +117,11 @@ There are tons of similar gems out there. Then why did I bother creating another
 
 * [simple_enum](https://github.com/lwe/simple_enum)
   * Pretty close to EnumAccessor feature-wise but requires `*_cd` suffix for the database column, which makes AR scopes ugly.
-* [enum_field](https://github.com/jamesgolick/enum_field)
   * Enum values are defined as top-level predicate methods, which could conflict with existing methods. Also you can't define multiple enums to the same model. In some use cases, predicate methods are not necessary and you just want to be on the safe side.
 * [enumerated_attribute](https://github.com/jeffp/enumerated_attribute)
   * Top-level predicate methods. Many additional methods are coupled with a specific usage assumption.
+* [enum_field](https://github.com/jamesgolick/enum_field)
+  * Top-level predicate methods.
 * [coded_options](https://github.com/jasondew/coded_options)
 * [active_enum](https://github.com/adzap/active_enum)
 * [classy_enum](https://github.com/beerlington/classy_enum)
