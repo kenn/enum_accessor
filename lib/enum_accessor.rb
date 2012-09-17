@@ -6,25 +6,6 @@ module EnumAccessor
   extend ActiveSupport::Concern
 
   module ClassMethods
-    # enum_accessor encapsulates a validates_inclusion_of and automatically gives you a 
-    # few more goodies automatically.
-    # 
-    #     class Computer < ActiveRecord:Base
-    #       enum_accessor :status, [ :on, :off ], validation_options: { message: "incorrect status" }
-    # 
-    #       # Optionally with a message to replace the default one
-    #       # enum_accessor :status, [ :on, :off ]
-    # 
-    #       #...
-    #     end
-    # 
-    # This will give you a few things:
-    # 
-    # - add a validates_inclusion_of with a simple error message ("invalid #{field}") or your custom message
-    # - define the following query methods, in the name of expressive code:
-    #   - status_on?
-    #   - status_off?
-    # - define the STATUSES constant, which contains the acceptable values
     def enum_accessor(field, enums, options={})
       # Normalize arguments
       field = field.to_s
@@ -79,7 +60,7 @@ module EnumAccessor
         end
       EOS
 
-      # Human-friendly view
+      # Human-friendly print
       define_method("human_#{field}") do
         self.class.human_enum_accessor(field, self.send(field))
       end

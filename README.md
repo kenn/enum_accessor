@@ -12,15 +12,7 @@ Add this line to your application's Gemfile.
 gem 'enum_accessor'
 ```
 
-Define:
-
-```ruby
-class User < ActiveRecord::Base
-  enum_accessor :gender, [ :female, :male ]
-end
-```
-
-Migration:
+Add an integer column.
 
 ```ruby
 create_table :users do |t|
@@ -28,9 +20,18 @@ create_table :users do |t|
 end
 ```
 
-Now
+Define `enum_accessor` in a model class.
 
 ```ruby
+class User < ActiveRecord::Base
+  enum_accessor :gender, [ :female, :male ]
+end
+```
+
+And now you have a set of methods and constants.
+
+```ruby
+User::GENDERS           # => { "female" => 0, "male" => 1 }
 User.genders            # => { :female => 0, :male => 1 }
 
 user = User.new
@@ -50,7 +51,7 @@ There are times when it makes more sense to manually pick particular integers fo
 Just pass a hash with coded integer values.
 
 ```ruby
-enum_accessor :status, ok: 200, bad_request: 400, not_found: 404, internal_server_error: 500, service_unavailable: 503
+enum_accessor :status, ok: 200, not_found: 404, internal_server_error: 500
 ```
 
 ## Scoping query
@@ -59,6 +60,20 @@ To retrieve internal integer values for query, use `User.genders`.
 
 ```ruby
 User.where(gender: User.genders(:female))
+```
+
+## Validations
+
+You can pass custom validation options to `validates_inclusion_of`.
+
+```ruby
+enum_accessor :status, [ :on, :off ], validation_options: { message: "incorrect status" }
+```
+
+Or skip validation entirely.
+
+```ruby
+enum_accessor :status, [ :on, :off ], validate: false
 ```
 
 ## i18n
