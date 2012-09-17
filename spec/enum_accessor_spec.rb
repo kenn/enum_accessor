@@ -38,12 +38,18 @@ describe EnumAccessor do
     @user.gender_male?.should == true
   end
 
-  it 'adds humanized getter' do
+  it 'adds humanized methods' do
     I18n.locale = :ja
+    User.human_attribute_name(:gender).should == '性別'
     @user.human_gender.should == '女'
+    User.human_genders(:female).should == '女'
+    User.human_genders.should == { :female => '女', :male => '男' }
 
     I18n.locale = :en
+    User.human_attribute_name(:gender).should == 'Gender'
     @user.human_gender.should == 'Female'
+    User.human_genders(:female).should == 'Female'
+    User.human_genders.should == { :female => 'Female', :male => 'Male' }
   end
 
   it 'defines internal constant' do

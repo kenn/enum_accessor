@@ -26,7 +26,7 @@ module EnumAccessor
 
       # Getter
       define_method(field) do
-        const.key(read_attribute(field)).try(:to_sym)
+        symbolized_enums.key(read_attribute(field))
       end
 
       # Setter
@@ -52,11 +52,17 @@ module EnumAccessor
         end
       end
 
+      # Class method
       class_eval(<<-EOS, __FILE__, __LINE__ + 1)
-        def self.#{field.pluralize}(*args)
-          return #{symbolized_enums} if args.first.nil?
-          return #{symbolized_enums}[args.first.to_sym] if args.size == 1
-          args.map{|arg| #{symbolized_enums}[arg.to_sym] }
+        def self.#{field.pluralize}(symbol = nil)
+          return #{symbolized_enums} if symbol.nil?
+          return #{symbolized_enums}[symbol]
+        end
+
+        def self.human_#{field.pluralize}(symbol = nil)
+          humanized_enums = Hash[#{symbolized_enums}.map{|k,v| [k, human_enum_accessor(:#{field}, k)] }]
+          return humanized_enums if symbol.nil?
+          return humanized_enums[symbol]
         end
       EOS
 
@@ -72,14 +78,14 @@ module EnumAccessor
     end
 
     # Mimics ActiveModel::Translation.human_attribute_name
-    def human_enum_accessor(field, value, options = {})
+    def human_enum_accessor(field, key, options = {})
       defaults = lookup_ancestors.map do |klass|
-        :"#{self.i18n_scope}.enum_accessor.#{klass.model_name.i18n_key}.#{field}.#{value}"
+        :"#{self.i18n_scope}.enum_accessor.#{klass.model_name.i18n_key}.#{field}.#{key}"
       end
-      defaults << :"enum_accessor.#{self.model_name.i18n_key}.#{field}.#{value}"
-      defaults << :"enum_accessor.#{field}.#{value}"
+      defaults << :"enum_accessor.#{self.model_name.i18n_key}.#{field}.#{key}"
+      defaults << :"enum_accessor.#{field}.#{key}"
       defaults << options.delete(:default) if options[:default]
-      defaults << value.to_s.humanize
+      defaults << key.to_s.humanize
 
       options.reverse_merge! :count => 1, :default => defaults
       I18n.translate(defaults.shift, options)

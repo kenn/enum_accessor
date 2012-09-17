@@ -1,6 +1,9 @@
 ja:
+  activerecord:
+    attributes:
+      user:
+        gender: 性別
   enum_accessor:
-    user:
-      gender:
-        female: 女
-        male: 男
+    gender:
+      female: 女
+      male: 男

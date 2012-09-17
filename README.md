@@ -12,14 +12,6 @@ Add this line to your application's Gemfile.
 gem 'enum_accessor'
 ```
 
-Add an integer column.
-
-```ruby
-create_table :users do |t|
-  t.integer :gender, default: 0
-end
-```
-
 Define `enum_accessor` in a model class.
 
 ```ruby
@@ -44,13 +36,23 @@ User.genders            # => { :female => 0, :male => 1 }
 User::GENDERS           # => { "female" => 0, "male" => 1 }
 ```
 
-Notice that zero-based numbering is used for database values.
+Notice that zero-based numbering is used as database values.
+
+Your migration should look like this.
+
+```ruby
+create_table :users do |t|
+  t.integer :gender, :default => 0
+end
+```
+
+Optionally, it would be a good idea to add `:limit => 1` on the column for even better space efficiency when the enum set is small.
 
 ## Manual coding
 
-There are times when it makes more sense to manually pick particular integers for the mapping.
+There are times when it makes more sense to manually pick particular integer values for the mapping.
 
-Just pass a hash with coded integer values.
+In such cases, just pass a hash with coded integer values.
 
 ```ruby
 enum_accessor :status, ok: 200, not_found: 404, internal_server_error: 500
@@ -58,7 +60,7 @@ enum_accessor :status, ok: 200, not_found: 404, internal_server_error: 500
 
 ## Scoping query
 
-To retrieve internal integer values for query, use `User.genders`.
+For querying purpose, use `User.genders` method to retrieve internal integer values.
 
 ```ruby
 User.where(gender: User.genders(:female))
@@ -78,34 +80,37 @@ Or skip validation entirely.
 enum_accessor :status, [ :on, :off ], validate: false
 ```
 
-## i18n
+## Translation
 
-EnumAccessor supports i18n just as ActiveModel does.
+EnumAccessor supports [i18n](http://guides.rubyonrails.org/i18n.html) just as ActiveModel does.
 
-Add the following lines to `config/locales/ja.yml`
+For instance, create a Japanese translation in `config/locales/ja.yml`
 
 ```yaml
 ja:
   enum_accessor:
-    user:
-      gender:
-        female: 女
-        male: 男
+    gender:
+      female: 女
+      male: 男
 ```
 
-and now `human_*` method returns a translated string. It defaults to English nicely as well.
+and now `human_*` methods return a translated string. It defaults to `humanize` method nicely as well.
 
 ```ruby
 I18n.locale = :ja
-user.human_gender   # => '女'
+user.human_gender     # => '女'
+User.human_genders    # => { :female => '女', :male => '男' }
 
 I18n.locale = :en
-user.human_gender   # => 'Female'
+user.human_gender     # => 'Female'
+User.human_genders    # => { :female => 'Female', :male => 'Male' }
 ```
 
 ## Why enum keys are internally stored as strings rather than symbols?
 
-Because `params[:gender].to_sym` is dangerous. It could be a source of problems like memory leak, slow symbol table lookup, or even DoS attack. If a user sends random strings for the parameter, it generates unlimited number of symbols, which can never be garbage collected, and eventually causes `symbol table overflow (RuntimeError)`, eating up gigabytes of memory.
+Because `params[:gender].to_sym` is dangerous. It could lead to problems like memory leak, slow symbol table lookup, or even DoS attack. If a user sends random strings for the parameter, it generates uncontrollable number of symbols, which can never be garbage collected, and eventually causes `symbol table overflow (RuntimeError)`, eating up gigabytes of memory.
+
+We 
 
 For the same reason, `ActiveSupport::HashWithIndifferentAccess` (which is used for `params`) keeps hash keys as string internally.
 
