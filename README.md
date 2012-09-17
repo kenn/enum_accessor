@@ -16,7 +16,7 @@ Add an integer column.
 
 ```ruby
 create_table :users do |t|
-  t.column :gender, :integer, default: 0
+  t.integer :gender, default: 0
 end
 ```
 
@@ -97,10 +97,10 @@ and now `human_*` method returns a translated string. It defaults to English nic
 
 ```ruby
 I18n.locale = :ja
-user.human_gender       # => '女'
+user.human_gender   # => '女'
 
 I18n.locale = :en
-user.human_gender       # => 'Female'
+user.human_gender   # => 'Female'
 ```
 
 ## Why enum keys are internally stored as strings rather than symbols?

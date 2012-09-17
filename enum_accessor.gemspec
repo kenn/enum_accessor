@@ -8,9 +8,9 @@ Gem::Specification.new do |gem|
   gem.version       = EnumAccessor::VERSION
   gem.authors       = ['Kenn Ejima']
   gem.email         = ['kenn.ejima@gmail.com']
-  gem.description   = %q{Enum field support for ActiveModel with validations and i18n}
-  gem.summary       = %q{Enum field support for ActiveModel with validations and i18n}
-  gem.homepage      = ''
+  gem.description   = %q{Simple enum fields for ActiveRecord}
+  gem.summary       = %q{Simple enum fields for ActiveRecord}
+  gem.homepage      = 'https://github.com/kenn/enum_accessor'
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }

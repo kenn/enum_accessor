@@ -52,6 +52,8 @@ describe EnumAccessor do
 
   it 'adds class methods' do
     User.genders.should == { :female => 0, :male => 1 }
+    User.genders[:female].should == 0
+    User.genders(:female).should == 0
   end
 
   it 'adds validation' do
