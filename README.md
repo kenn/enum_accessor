@@ -116,16 +116,13 @@ https://github.com/rails/rails/blob/master/activesupport/lib/active_support/hash
 There are tons of similar gems out there. Then why did I bother creating another one myself rather than sending pull requests to one of them? Because each one of them has incompatible design policies than EnumAccessor.
 
 * [simple_enum](https://github.com/lwe/simple_enum)
-    * Pretty close to EnumAccessor feature-wise but requires `*_cd` suffix for the database column, which makes AR scopes ugly.
+  * Pretty close to EnumAccessor feature-wise but requires `*_cd` suffix for the database column, which makes AR scopes ugly.
 * [enum_field](https://github.com/jamesgolick/enum_field)
-    * Enum values are defined as top-level predicate methods, which could conflict with existing methods. Also you can't define multiple enums to the same model. In some use cases, predicate methods are not necessary and you just want to be on the safe side.
+  * Enum values are defined as top-level predicate methods, which could conflict with existing methods. Also you can't define multiple enums to the same model. In some use cases, predicate methods are not necessary and you just want to be on the safe side.
 * [enumerated_attribute](https://github.com/jeffp/enumerated_attribute)
-    * Top-level predicate methods. Many additional methods are coupled with a specific usage assumption.
+  * Top-level predicate methods. Many additional methods are coupled with a specific usage assumption.
 * [coded_options](https://github.com/jasondew/coded_options)
-    * No support for symbols. Verbose definitions.
 * [active_enum](https://github.com/adzap/active_enum)
-    * Syntax seems verbose.
 * [classy_enum](https://github.com/beerlington/classy_enum)
-    * As the name suggests, class-based enum. I wanted something lighter.
 
 Also, EnumAccessor has one of the simplest code base, so that you can easily hack on.
