@@ -110,8 +110,6 @@ User.human_genders    # => { :female => 'Female', :male => 'Male' }
 
 Because `params[:gender].to_sym` is dangerous. It could lead to problems like memory leak, slow symbol table lookup, or even DoS attack. If a user sends random strings for the parameter, it generates uncontrollable number of symbols, which can never be garbage collected, and eventually causes `symbol table overflow (RuntimeError)`, eating up gigabytes of memory.
 
-We 
-
 For the same reason, `ActiveSupport::HashWithIndifferentAccess` (which is used for `params`) keeps hash keys as string internally.
 
 https://github.com/rails/rails/blob/master/activesupport/lib/active_support/hash_with_indifferent_access.rb
