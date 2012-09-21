@@ -128,5 +128,6 @@ There are tons of similar gems out there. Then why did I bother creating another
 * [coded_options](https://github.com/jasondew/coded_options)
 * [active_enum](https://github.com/adzap/active_enum)
 * [classy_enum](https://github.com/beerlington/classy_enum)
+* [enumerize](https://github.com/brainspec/enumerize)
 
 Also, EnumAccessor has one of the simplest code base, so that you can easily hack on.
