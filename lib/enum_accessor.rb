@@ -31,7 +31,12 @@ module EnumAccessor
 
       # Setter
       define_method("#{field}=") do |arg|
-        write_attribute field, const[arg.to_s]
+        case arg
+        when String, Symbol
+          write_attribute field, const[arg.to_s]
+        when Integer
+          write_attribute field, arg
+        end
       end
 
       # Raw-value getter

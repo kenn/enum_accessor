@@ -106,6 +106,10 @@ user.human_gender     # => 'Female'
 User.human_genders    # => { :female => 'Female', :male => 'Male' }
 ```
 
+## Changelog
+
+- v0.3.0: Add support for `find_or_create_by`
+
 ## Why enum keys are internally stored as strings rather than symbols?
 
 Because `params[:gender].to_sym` is dangerous. It could lead to problems like memory leak, slow symbol table lookup, or even DoS attack. If a user sends random strings for the parameter, it generates uncontrollable number of symbols, which can never be garbage collected, and eventually causes `symbol table overflow (RuntimeError)`, eating up gigabytes of memory.

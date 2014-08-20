@@ -69,4 +69,12 @@ describe EnumAccessor do
     @user.gender = 'male'
     expect(@user.valid?).to be_truthy
   end
+
+  it 'supports find_or_create_by' do
+    # `find_or_create_by` uses where-based raw value for find,
+    # then passes the raw value to the setter method for create.
+    expect {
+      User.find_or_create_by(gender: User.genders(:female))
+    }.to change{ User.count }.by(1)
+  end
 end
