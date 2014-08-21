@@ -6,94 +6,101 @@ module EnumAccessor
   extend ActiveSupport::Concern
 
   module ClassMethods
-    def enum_accessor(field, enums, options={})
-      # Normalize arguments
-      field = field.to_s
-      case enums
-      when Array
-        enums = Hash[enums.map.with_index{|v,i| [v.to_s, i] }]
-      when Hash
-        enums = Hash[enums.map{|k,v| [k.to_s, v] }]
-      else
-        raise ArgumentError.new('enum_accessor takes Array or Hash as the second argument')
-      end
-
-      const_name = field.pluralize.upcase
-      const_set(const_name, enums) unless const_defined?(const_name)
-      const = const_get(const_name)
-
-      symbolized_enums = Hash[enums.map{|k,v| [k.to_sym, v] }]
+    def enum_accessor(column, keys, options={})
+      definition = :"#{column}_enum_accessor"
+      class_attribute definition # will set instance accessor as well
+      send "#{definition}=", Definition.new(column, keys, self)
 
       # Getter
-      define_method(field) do
-        symbolized_enums.key(read_attribute(field))
+      define_method(column) do
+        send(definition).dict.key(read_attribute(column))
       end
 
       # Setter
-      define_method("#{field}=") do |arg|
+      define_method("#{column}=") do |arg|
         case arg
         when String, Symbol
-          write_attribute field, const[arg.to_s]
-        when Integer
-          write_attribute field, arg
+          write_attribute column, send(definition).dict[arg]
+        when Integer, NilClass
+          write_attribute column, arg
         end
       end
 
       # Raw-value getter
-      define_method("#{field}_raw") do
-        read_attribute field
+      define_method("#{column}_raw") do
+        read_attribute(column)
       end
 
-      # Raw-value setter
-      define_method("#{field}_raw=") do |arg|
-        write_attribute field, Integer(arg)
-      end
-
-      # Checker
-      symbolized_enums.keys.each do |key|
-        method_name = key.to_s.downcase.gsub(/[-\s]/, '_')
-        define_method("#{field}_#{method_name}?") do
-          self.send(field) == key
+      # Predicate
+      send(definition).dict.each do |key, int|
+        define_method("#{column}_#{key}?") do
+          read_attribute(column) == int
         end
       end
-
-      # Class method
-      class_eval(<<-EOS, __FILE__, __LINE__ + 1)
-        def self.#{field.pluralize}(symbol = nil)
-          return #{symbolized_enums} if symbol.nil?
-          return #{symbolized_enums}[symbol]
-        end
-
-        def self.human_#{field.pluralize}(symbol = nil)
-          humanized_enums = Hash[#{symbolized_enums}.map{|k,v| [k, human_enum_accessor(:#{field}, k)] }]
-          return humanized_enums if symbol.nil?
-          return humanized_enums[symbol]
-        end
-      EOS
 
       # Human-friendly print
-      define_method("human_#{field}") do
-        self.class.human_enum_accessor(field, self.send(field))
+      define_method("human_#{column}") do
+        self.class.send "human_#{column}", send(column)
+      end
+
+      # Class methods
+      define_singleton_method column.to_s.pluralize do
+        send(definition)
+      end
+
+      # Human-friendly print on class level
+      # Mimics ActiveModel::Translation.human_attribute_name
+      define_singleton_method "human_#{column}" do |key, options={}|
+        defaults = lookup_ancestors.map do |klass|
+          :"#{self.i18n_scope}.enum_accessor.#{klass.model_name.i18n_key}.#{column}.#{key}"
+        end
+        defaults << :"enum_accessor.#{self.model_name.i18n_key}.#{column}.#{key}"
+        defaults << :"enum_accessor.#{column}.#{key}"
+        defaults << options.delete(:default) if options[:default]
+        defaults << key.to_s.humanize
+
+        options.reverse_merge! count: 1, default: defaults
+        I18n.translate(defaults.shift, options)
+      end
+
+      # Scopes
+      define_singleton_method "where_#{column}" do |*args|
+        integers = args.map{|arg| send(definition).dict[arg] }.compact
+        where(column => integers)
       end
 
       # Validation
-      unless options[:validate] == false
-        validates_inclusion_of field, { :in => symbolized_enums.keys }.merge(options[:validation_options] || {})
+      if options.has_key?(:validate) or options.has_key?(:validation_options)
+        raise ArgumentError, 'validation options are updated. please refer to the documentation.'
+      end
+      if options[:validates]
+        validation_options = options[:validates].is_a?(Hash) ? options[:validates] : {}
+        validates column, { inclusion: { in: send(definition).dict.keys } }.merge(validation_options)
       end
     end
 
-    # Mimics ActiveModel::Translation.human_attribute_name
-    def human_enum_accessor(field, key, options = {})
-      defaults = lookup_ancestors.map do |klass|
-        :"#{self.i18n_scope}.enum_accessor.#{klass.model_name.i18n_key}.#{field}.#{key}"
-      end
-      defaults << :"enum_accessor.#{self.model_name.i18n_key}.#{field}.#{key}"
-      defaults << :"enum_accessor.#{field}.#{key}"
-      defaults << options.delete(:default) if options[:default]
-      defaults << key.to_s.humanize
+    class Definition
+      attr_accessor :dict
 
-      options.reverse_merge! :count => 1, :default => defaults
-      I18n.translate(defaults.shift, options)
+      def initialize(column, keys, klass)
+        dict = case keys
+        when Array
+          Hash[keys.map.with_index{|i,index| [i, index] }]
+        when Hash
+          keys
+        else
+          raise ArgumentError.new('enum_accessor takes Array or Hash as the second argument')
+        end
+
+        @column = column
+        @klass = klass
+        @dict = dict.with_indifferent_access.freeze
+      end
+
+      def human_dict
+        # Don't memoize - I18n.locale can change
+        Hash[@dict.keys.map{|key| [key, @klass.send("human_#{@column}", key)] }].with_indifferent_access
+      end
     end
   end
 end
