@@ -4,7 +4,7 @@ EnumAccessor lets you define enum for attributes, and store them as integer in t
 
 It is very similar to [Official Rails 4.1 Implementation](http://edgeguides.rubyonrails.org/4_1_release_notes.html#active-record-enums), but EnumAccessor offers quite a few advantages:
 
-* Safe predicate methods (`user.status_active?` instead of `user.active?`)
+* No-conflict safe predicate methods (`user.status_active?` instead of `user.active?`)
 * Validation
 * Scope
 * Translation
@@ -81,10 +81,10 @@ User.where_status(:active, :pending)
 
 ## Validations
 
-You can pass `validates: true` to enable validation.
+By default, models are validated using `inclusion`. To disable, pass `false` to `validates` option.
 
 ```ruby
-enum_accessor :status, [:on, :off], validates: true
+enum_accessor :status, [:on, :off], validates: false
 ```
 
 You can also pass validation options.
