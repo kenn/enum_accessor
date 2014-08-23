@@ -7,8 +7,8 @@ module EnumAccessor
 
   module ClassMethods
     def enum_accessor(column, keys, options={})
-      definition = :"#{column}_enum_accessor"
-      class_attribute definition # will set instance accessor as well
+      definition = options[:class_attribute] || column.to_s.pluralize.to_sym
+      class_attribute definition
       send "#{definition}=", Definition.new(column, keys, self)
 
       # Getter
@@ -40,12 +40,7 @@ module EnumAccessor
 
       # Human-friendly print
       define_method("human_#{column}") do
-        self.class.send "human_#{column}", send(column)
-      end
-
-      # Class methods
-      define_singleton_method column.to_s.pluralize do
-        send(definition)
+        send(definition).human_dict[send(column)]
       end
 
       # Human-friendly print on class level
@@ -73,7 +68,7 @@ module EnumAccessor
       if options.has_key?(:validate) or options.has_key?(:validation_options)
         raise ArgumentError, 'validation options are updated. please refer to the documentation.'
       end
-      if options[:validates]
+      unless options[:validates] == false
         validation_options = options[:validates].is_a?(Hash) ? options[:validates] : {}
         validates column, { inclusion: { in: send(definition).dict.keys } }.merge(validation_options)
       end
@@ -95,11 +90,13 @@ module EnumAccessor
         @column = column
         @klass = klass
         @dict = dict.with_indifferent_access.freeze
+        @human_dict = {}
       end
 
       def human_dict
-        # Don't memoize - I18n.locale can change
-        Hash[@dict.keys.map{|key| [key, @klass.send("human_#{@column}", key)] }].with_indifferent_access
+        @human_dict[I18n.locale] ||= begin
+          Hash[@dict.keys.map{|key| [key, @klass.send("human_#{@column}", key)] }].with_indifferent_access.freeze
+        end
       end
     end
   end

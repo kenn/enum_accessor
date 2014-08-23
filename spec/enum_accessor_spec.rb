@@ -43,15 +43,15 @@ describe EnumAccessor do
   it 'adds humanized methods' do
     I18n.locale = :ja
     expect(User.human_attribute_name(:gender)).to eq('性別')
-    expect(@user.human_gender).to eq('女')
-    expect(User.genders.human_dict[:female]).to eq('女')
     expect(User.genders.human_dict).to eq({ 'female' => '女', 'male' => '男' })
+    expect(User.genders.human_dict[:female]).to eq('女')
+    expect(@user.human_gender).to eq('女')
 
     I18n.locale = :en
     expect(User.human_attribute_name(:gender)).to eq('Gender')
-    expect(@user.human_gender).to eq('Female')
-    expect(User.genders.human_dict[:female]).to eq('Female')
     expect(User.genders.human_dict).to eq({ 'female' => 'Female', 'male' => 'Male' })
+    expect(User.genders.human_dict[:female]).to eq('Female')
+    expect(@user.human_gender).to eq('Female')
   end
 
   it 'adds class methods' do
@@ -72,9 +72,9 @@ describe EnumAccessor do
   end
 
   it 'adds validation' do
-    class UserValidate < ActiveRecord::Base
+    class UserNoValidate < ActiveRecord::Base
       self.table_name = :users
-      enum_accessor :gender, [:female, :male], validates: true
+      enum_accessor :gender, [:female, :male], validates: false
     end
 
     class UserValidateAllowNil < ActiveRecord::Base
@@ -82,13 +82,21 @@ describe EnumAccessor do
       enum_accessor :gender, [:female, :male], validates: { allow_nil: true }
     end
 
-    user = UserValidate.new
+    user = User.new
     user.gender = 'male'
     expect(user.valid?).to be_truthy
     user.gender = nil
     expect(user.valid?).to be_falsey
     user.gender = 'bogus' # Becomes nil
     expect(user.valid?).to be_falsey
+
+    user = UserNoValidate.new
+    user.gender = 'male'
+    expect(user.valid?).to be_truthy
+    user.gender = nil
+    expect(user.valid?).to be_truthy
+    user.gender = 'bogus' # Becomes nil
+    expect(user.valid?).to be_truthy
 
     user = UserValidateAllowNil.new
     user.gender = 'male'

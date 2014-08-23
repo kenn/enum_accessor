@@ -111,24 +111,28 @@ and now `human_*` methods return a translated string. It defaults to `humanize` 
 
 ```ruby
 I18n.locale = :ja
-user.human_gender       # => '女'
-User.genders.human_dict # => { 'female' => '女', 'male' => '男' }
+user.human_gender         # => '女'
+User.genders.human_dict   # => { 'female' => '女', 'male' => '男' }
 
 I18n.locale = :en
-user.human_gender       # => 'Female'
-User.genders.human_dict # => { 'female' => 'Female', 'male' => 'Male' }
+user.human_gender         # => 'Female'
+User.genders.human_dict   # => { 'female' => 'Female', 'male' => 'Male' }
 ```
 
 ## Changelog
 
+- v1.1.0:
+  - Validate by default again.
+  - Added `:class_attribute` option to specify class attribute to hold definitions
+  - Cache translations on the fly
 - v1.0.0:
   - Drop support for Ruby 1.8
   - Now getter method returns a String rather than a Symbol
   - Do not validate by default
   - Added `where_gender(:female)` scope
-  - Removed the `_raw=` setter as it is now aware of the argument type
+  - Removed the `_raw=` as setter automatically handles both types
   - Removed constants (e.g. `User::GENDERS`) and now use the class attribute to save the definition
-- v0.3.0: Add support for `find_or_create_by`
+- v0.3.0: Add support for `find_or_create_by` - just pass integer value
 
 ## Other solutions
 
