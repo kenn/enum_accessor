@@ -7,20 +7,33 @@ module EnumAccessor
 
   module ClassMethods
     def enum_accessor(column, keys, options={})
+      # Normalize keys
+      dict = case keys
+      when Array
+        Hash[keys.map.with_index{|i,index| [i, index] }]
+      when Hash
+        keys
+      else
+        raise ArgumentError.new('enum_accessor takes Array or Hash as the second argument')
+      end
+
+      # Define class attributes
       definition = options[:class_attribute] || column.to_s.pluralize.to_sym
       class_attribute definition
-      send "#{definition}=", Definition.new(column, keys, self)
+      class_attribute "_human_#{definition}"
+      send "#{definition}=", dict.with_indifferent_access.freeze
+      send "_human_#{definition}=", {}
 
       # Getter
       define_method(column) do
-        send(definition).dict.key(read_attribute(column))
+        send(definition).key(read_attribute(column))
       end
 
       # Setter
       define_method("#{column}=") do |arg|
         case arg
         when String, Symbol
-          write_attribute column, send(definition).dict[arg]
+          write_attribute column, send(definition)[arg]
         when Integer, NilClass
           write_attribute column, arg
         end
@@ -32,7 +45,7 @@ module EnumAccessor
       end
 
       # Predicate
-      send(definition).dict.each do |key, int|
+      send(definition).each do |key, int|
         define_method("#{column}_#{key}?") do
           read_attribute(column) == int
         end
@@ -40,10 +53,17 @@ module EnumAccessor
 
       # Human-friendly print
       define_method("human_#{column}") do
-        send(definition).human_dict[send(column)]
+        self.class.send("human_#{definition}")[send(column)]
       end
 
       # Human-friendly print on class level
+      define_singleton_method("human_#{definition}") do
+        send("_human_#{definition}")[I18n.locale] ||= begin
+          Hash[send(definition).keys.map{|key| [key, send("human_#{column}", key)] }].with_indifferent_access.freeze
+        end
+      end
+
+      # Internal method for translation
       # Mimics ActiveModel::Translation.human_attribute_name
       define_singleton_method "human_#{column}" do |key, options={}|
         defaults = lookup_ancestors.map do |klass|
@@ -60,7 +80,7 @@ module EnumAccessor
 
       # Scopes
       define_singleton_method "where_#{column}" do |*args|
-        integers = args.map{|arg| send(definition).dict[arg] }.compact
+        integers = args.map{|arg| send(definition)[arg] }.compact
         where(column => integers)
       end
 
@@ -70,33 +90,7 @@ module EnumAccessor
       end
       unless options[:validates] == false
         validation_options = options[:validates].is_a?(Hash) ? options[:validates] : {}
-        validates column, { inclusion: { in: send(definition).dict.keys } }.merge(validation_options)
-      end
-    end
-
-    class Definition
-      attr_accessor :dict
-
-      def initialize(column, keys, klass)
-        dict = case keys
-        when Array
-          Hash[keys.map.with_index{|i,index| [i, index] }]
-        when Hash
-          keys
-        else
-          raise ArgumentError.new('enum_accessor takes Array or Hash as the second argument')
-        end
-
-        @column = column
-        @klass = klass
-        @dict = dict.with_indifferent_access.freeze
-        @human_dict = {}
-      end
-
-      def human_dict
-        @human_dict[I18n.locale] ||= begin
-          Hash[@dict.keys.map{|key| [key, @klass.send("human_#{@column}", key)] }].with_indifferent_access.freeze
-        end
+        validates column, { inclusion: { in: send(definition).keys } }.merge(validation_options)
       end
     end
   end

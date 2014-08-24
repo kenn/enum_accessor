@@ -43,20 +43,20 @@ describe EnumAccessor do
   it 'adds humanized methods' do
     I18n.locale = :ja
     expect(User.human_attribute_name(:gender)).to eq('性別')
-    expect(User.genders.human_dict).to eq({ 'female' => '女', 'male' => '男' })
-    expect(User.genders.human_dict[:female]).to eq('女')
+    expect(User.human_genders).to eq({ 'female' => '女', 'male' => '男' })
+    expect(User.human_genders[:female]).to eq('女')
     expect(@user.human_gender).to eq('女')
 
     I18n.locale = :en
     expect(User.human_attribute_name(:gender)).to eq('Gender')
-    expect(User.genders.human_dict).to eq({ 'female' => 'Female', 'male' => 'Male' })
-    expect(User.genders.human_dict[:female]).to eq('Female')
+    expect(User.human_genders).to eq({ 'female' => 'Female', 'male' => 'Male' })
+    expect(User.human_genders[:female]).to eq('Female')
     expect(@user.human_gender).to eq('Female')
   end
 
   it 'adds class methods' do
-    expect(User.genders.dict).to eq({ 'female' => 0, 'male' => 1 })
-    expect(User.genders.dict[:female]).to eq(0)
+    expect(User.genders).to eq({ 'female' => 0, 'male' => 1 })
+    expect(User.genders[:female]).to eq(0)
   end
 
   it 'supports manual coding' do
@@ -111,7 +111,7 @@ describe EnumAccessor do
     # `find_or_create_by` uses where-based raw value for find,
     # then passes the raw value to the setter method for create.
     expect {
-      User.find_or_create_by(gender: User.genders.dict[:female])
+      User.find_or_create_by(gender: User.genders[:female])
     }.to change{ User.count }.by(1)
   end
 

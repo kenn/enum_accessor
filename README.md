@@ -40,7 +40,7 @@ user.gender = :male
 user.gender_female?     # => false
 user.gender_raw         # => 1
 
-User.genders.dict       # => { 'female' => 0, 'male' => 1 }
+User.genders            # => { 'female' => 0, 'male' => 1 }
 ```
 
 Notice that zero-based numbering is used as database values.
@@ -79,6 +79,12 @@ Also takes multiple values.
 User.where_status(:active, :pending)
 ```
 
+To use under direct `where` context (e.g. `find_by` or `find_or_create_by`), pass integer value.
+
+```ruby
+Social.find_or_create_by(kind: Social.kinds[:facebook], external_id: facebook_user_id)
+```
+
 ## Validations
 
 By default, models are validated using `inclusion`. To disable, pass `false` to `validates` option.
@@ -112,15 +118,17 @@ and now `human_*` methods return a translated string. It defaults to `humanize` 
 ```ruby
 I18n.locale = :ja
 user.human_gender         # => '女'
-User.genders.human_dict   # => { 'female' => '女', 'male' => '男' }
+User.human_genders        # => { 'female' => '女', 'male' => '男' }
 
 I18n.locale = :en
 user.human_gender         # => 'Female'
-User.genders.human_dict   # => { 'female' => 'Female', 'male' => 'Male' }
+User.human_genders        # => { 'female' => 'Female', 'male' => 'Male' }
 ```
 
 ## Changelog
 
+- v2.0.0:
+  - Reworked to remove the "dict" methods. Now `User.genders.dict` is `User.genders` and `User.genders.human_dict` is `User.human_genders`
 - v1.1.0:
   - Validate by default again.
   - Added `:class_attribute` option to specify class attribute to hold definitions
