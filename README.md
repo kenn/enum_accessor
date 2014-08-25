@@ -2,12 +2,13 @@
 
 EnumAccessor lets you define enum for attributes, and store them as integer in the database.
 
-It is very similar to [Official Rails 4.1 Implementation](http://edgeguides.rubyonrails.org/4_1_release_notes.html#active-record-enums), but EnumAccessor offers quite a few advantages:
+It is very similar to [Official Rails 4.1 Implementation](http://edgeguides.rubyonrails.org/4_1_release_notes.html#active-record-enums), but EnumAccessor offers quite a few advantages, with even fewer lines of code. :) Compare [rails version](https://github.com/rails/rails/blob/v4.1.5/activerecord/lib/active_record/enum.rb) with [enum_accessor](https://github.com/kenn/enum_accessor/blob/v2.0.0/lib/enum_accessor.rb).
 
 * No-conflict safe predicate methods (`user.status_active?` instead of `user.active?`)
 * Validation
 * Scope
 * Translation
+* Forms
 
 Compatible with ActiveRecord 3 or later.
 
@@ -125,9 +126,9 @@ user.human_gender         # => 'Female'
 User.human_genders        # => { 'female' => 'Female', 'male' => 'Male' }
 ```
 
-## Form
+## Forms
 
-Forms just work as you expect. Pass an inverted `human_*` hash for the select tag options.
+Thanks to the translation support, forms just work as you expect. Pass an inverted `human_*` hash for the select tag options.
 
 ```haml
 = form_for @user do |f|
