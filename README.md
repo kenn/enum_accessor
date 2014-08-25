@@ -132,6 +132,7 @@ Forms just work as you expect. Pass an inverted `human_*` hash for the select ta
 ```haml
 = form_for @user do |f|
   = f.select :gender, User.human_genders.invert
+```
 
 ## Changelog
 
