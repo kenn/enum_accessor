@@ -125,6 +125,14 @@ user.human_gender         # => 'Female'
 User.human_genders        # => { 'female' => 'Female', 'male' => 'Male' }
 ```
 
+## Form
+
+Forms just work as you expect. Pass an inverted `human_*` hash for the select tag options.
+
+```haml
+= form_for @user do |f|
+  = f.select :gender, User.human_genders.invert
+
 ## Changelog
 
 - v2.0.0:
