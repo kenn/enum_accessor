@@ -107,6 +107,22 @@ describe EnumAccessor do
     expect(user.valid?).to be_truthy
   end
 
+  it 'supports uniqueness validation' do
+    class UserValidateWithUniqueness < ActiveRecord::Base
+      self.table_name = :users
+      enum_accessor :gender, [:female, :male]
+
+      validates :gender, uniqueness: true
+    end
+
+    UserValidateWithUniqueness.create!(gender: :male)
+
+    user = UserValidateWithUniqueness.new
+    user.gender = 'male'
+    expect(user.valid?).to be_falsey
+    expect(user.errors[:gender]).to eq(['has already been taken'])
+  end
+
   it 'supports find_or_create_by' do
     # `find_or_create_by` uses where-based raw value for find,
     # then passes the raw value to the setter method for create.
