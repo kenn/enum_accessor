@@ -16,13 +16,17 @@ module EnumAccessor
       else
         raise ArgumentError.new('enum_accessor takes Array or Hash as the second argument')
       end
+      freezed_dict = dict.with_indifferent_access.freeze
 
       # Define class attributes
       definition = options[:class_attribute] || column.to_s.pluralize.to_sym
       class_attribute definition
       class_attribute "_human_#{definition}"
-      send "#{definition}=", dict.with_indifferent_access.freeze
+      send "#{definition}=", freezed_dict
       send "_human_#{definition}=", {}
+
+      # Define as enums
+      defined_enums[column.to_s] = freezed_dict
 
       # Getter
       define_method(column) do
