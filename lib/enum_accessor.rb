@@ -15,18 +15,19 @@ module EnumAccessor
         keys
       else
         raise ArgumentError.new('enum_accessor takes Array or Hash as the second argument')
-      end
-      freezed_dict = dict.with_indifferent_access.freeze
+      end.with_indifferent_access.freeze
 
       # Define class attributes
       definition = options[:class_attribute] || column.to_s.pluralize.to_sym
       class_attribute definition
       class_attribute "_human_#{definition}"
-      send "#{definition}=", freezed_dict
+      send "#{definition}=", dict
       send "_human_#{definition}=", {}
 
-      # Define as enums
-      defined_enums[column.to_s] = freezed_dict
+      # ActiveRecord::Enum uses defined_enums for UniquenessValidator
+      if respond_to?(:defined_enums)
+        defined_enums[column.to_s] = dict
+      end
 
       # Getter
       define_method(column) do
