@@ -137,20 +137,22 @@ Thanks to the translation support, forms just work as you expect. Pass an invert
 
 ## Changelog
 
-- v2.0.0:
+- v2.1:
+  - Support for uniqueness validation
+- v2.0:
   - Reworked to remove the "dict" methods. Now `User.genders.dict` is `User.genders` and `User.genders.human_dict` is `User.human_genders`
-- v1.1.0:
+- v1.1:
   - Validate by default again.
   - Added `:class_attribute` option to specify class attribute to hold definitions
   - Cache translations on the fly
-- v1.0.0:
+- v1.0:
   - Drop support for Ruby 1.8
   - Now getter method returns a String rather than a Symbol
   - Do not validate by default
   - Added `where_gender(:female)` scope
   - Removed the `_raw=` as setter automatically handles both types
   - Removed constants (e.g. `User::GENDERS`) and now use the class attribute to save the definition
-- v0.3.0: Add support for `find_or_create_by` - just pass integer value
+- v0.3: Add support for `find_or_create_by` - just pass integer value
 
 ## Other solutions
 
