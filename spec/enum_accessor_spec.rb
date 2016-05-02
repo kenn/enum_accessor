@@ -131,11 +131,19 @@ describe EnumAccessor do
     }.to change{ User.count }.by(1)
   end
 
-  it 'supports scope' do
-    user = User.create!(gender: :female)
+  describe 'with a user' do
+    before do
+      user = User.create!(gender: :female)
+    end
 
-    expect(User.where_gender(:female).count).to eq(1)
-    expect(User.where_gender(:male, :female).count).to eq(1)
-    expect(User.where_gender(:male).count).to eq(0)
+    it 'supports scope' do
+      expect(User.where_gender(:female).count).to eq(1)
+      expect(User.where_gender(:male, :female).count).to eq(1)
+      expect(User.where_gender(:male).count).to eq(0)
+    end
+
+    it 'supports negative scope' do
+      expect(User.where_gender_not(:male).count).to eq(1)
+    end
   end
 end

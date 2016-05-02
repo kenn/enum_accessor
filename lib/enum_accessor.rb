@@ -89,6 +89,11 @@ module EnumAccessor
         where(column => integers)
       end
 
+      define_singleton_method "where_#{column}_not" do |*args|
+        integers = args.map{|arg| send(definition)[arg] }.compact
+        where.not(column => integers)
+      end
+
       # Validation
       if options.has_key?(:validate) or options.has_key?(:validation_options)
         raise ArgumentError, 'validation options are updated. please refer to the documentation.'

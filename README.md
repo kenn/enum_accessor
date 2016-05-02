@@ -137,6 +137,8 @@ Thanks to the translation support, forms just work as you expect. Pass an invert
 
 ## Changelog
 
+- v2.2:
+  - Added `where_gender_not(:female)` scope
 - v2.1:
   - Support for uniqueness validation
 - v2.0:
