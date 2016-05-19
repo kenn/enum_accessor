@@ -36,6 +36,14 @@ describe EnumAccessor do
     expect(@user.gender.nil?).to eq(true)
   end
 
+  it 'adds setter !' do
+    @user.gender_male!
+    expect(@user.gender_male?).to eq(true)
+
+    @user.gender_female!
+    expect(@user.gender_female?).to eq(true)
+  end
+
   it 'adds raw value getter' do
     expect(@user.gender_raw).to eq(0)
   end

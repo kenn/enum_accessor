@@ -41,6 +41,9 @@ user.gender = :male
 user.gender_female?     # => false
 user.gender_raw         # => 1
 
+user.gender_male!
+user.gender_male?       # => true
+
 User.genders            # => { 'female' => 0, 'male' => 1 }
 ```
 
