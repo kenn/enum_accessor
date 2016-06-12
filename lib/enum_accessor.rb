@@ -56,6 +56,13 @@ module EnumAccessor
         end
       end
 
+      # Setter !
+      send(definition).each do |key, int|
+        define_method("#{column}_#{key}!") do
+          update! column => int
+        end
+      end
+
       # Human-friendly print
       define_method("human_#{column}") do
         self.class.send("human_#{definition}")[send(column)]
