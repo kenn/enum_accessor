@@ -140,6 +140,8 @@ Thanks to the translation support, forms just work as you expect. Pass an invert
 
 ## Changelog
 
+- v2.3:
+    Added `gender_female!` bang setter
 - v2.2:
   - Added `where_gender_not(:female)` scope
 - v2.1:
