@@ -12,6 +12,8 @@ It is very similar to [Official Rails 4.1 Implementation](http://edgeguides.ruby
 
 Compatible with ActiveRecord 3 or later.
 
+If you want to handle multiple flags (bit array) with a single integer column, take a look at [ActiveFlag](https://github.com/kenn/active_flag).
+
 ## Usage
 
 Add this line to your application's Gemfile.
